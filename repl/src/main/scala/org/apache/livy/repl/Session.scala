@@ -342,7 +342,7 @@ class Session(
         (s"""sc.setJobGroup("$jobGroup", "Job group for statement $jobGroup")""", PySpark)
       case PySpark3 =>
         (s"""sc.setJobGroup("$jobGroup", "Job group for statement $jobGroup")""", PySpark3)
-       case SparkR =>
+      case SparkR =>
         sc.getConf.get("spark.livy.spark_major_version", "1") match {
           case "1" =>
             (s"""setJobGroup(sc, "$jobGroup", "Job group for statement $jobGroup", FALSE)""",

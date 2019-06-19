@@ -257,7 +257,7 @@ class Python2InterpreterSpec extends PythonBaseInterpreterSpec {
 
   override def createInterpreter(): Interpreter = {
     val sparkConf = new SparkConf()
-    PythonInterpreter(sparkConf, new SparkEntries(sparkConf))
+    PythonInterpreter(sparkConf, new SparkEntries(sparkConf), PySpark)
   }
 
   // Scalastyle is treating unicode escape as non ascii characters. Turn off the check.
@@ -297,7 +297,7 @@ class Python3InterpreterSpec extends PythonBaseInterpreterSpec with BeforeAndAft
 
   override def createInterpreter(): Interpreter = {
     val sparkConf = new SparkConf()
-    PythonInterpreter(sparkConf, new SparkEntries(sparkConf))
+    PythonInterpreter(sparkConf, new SparkEntries(sparkConf), PySpark3)
   }
 
   it should "check python version is 3.x" in withInterpreter { interpreter =>

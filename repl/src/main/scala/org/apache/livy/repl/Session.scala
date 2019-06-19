@@ -103,7 +103,7 @@ class Session(
           case Spark =>
             // This should never be touched here.
             throw new IllegalStateException("SparkInterpreter should not be lazily created.")
-          case PySpark => PythonInterpreter(sparkConf, entries)
+          case PySpark | PySpark3 => PythonInterpreter(sparkConf, entries)
           case SparkR => SparkRInterpreter(sparkConf, entries)
           case SQL => new SQLInterpreter(sparkConf, livyConf, entries)
         }
@@ -340,7 +340,9 @@ class Session(
          Spark)
       case PySpark =>
         (s"""sc.setJobGroup("$jobGroup", "Job group for statement $jobGroup")""", PySpark)
-      case SparkR =>
+      case PySpark3 =>
+        (s"""sc.setJobGroup("$jobGroup", "Job group for statement $jobGroup")""", PySpark3)
+       case SparkR =>
         sc.getConf.get("spark.livy.spark_major_version", "1") match {
           case "1" =>
             (s"""setJobGroup(sc, "$jobGroup", "Job group for statement $jobGroup", FALSE)""",

@@ -97,7 +97,11 @@ class ReplDriver(conf: SparkConf, livyConf: RSCConf)
         new BypassJobWrapper(this, msg.id,
           new BypassPySparkJob(msg.serializedJob,
             session.interpreter(PySpark).get.asInstanceOf[PythonInterpreter]))
-      case _ => super.createWrapper(msg)
+      case PySpark3 if session.interpreter(PySpark3).isDefined =>
+        new BypassJobWrapper(this, msg.id,
+          new BypassPySparkJob(msg.serializedJob,
+            session.interpreter(PySpark3).get.asInstanceOf[PythonInterpreter]))
+       case _ => super.createWrapper(msg)
     }
   }
 

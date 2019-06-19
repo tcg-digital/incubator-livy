@@ -44,10 +44,14 @@ import org.apache.livy.sessions._
 object PythonInterpreter extends Logging {
 
   def apply(conf: SparkConf, sparkEntries: SparkEntries): Interpreter = {
-    val pythonExec = conf.getOption("spark.pyspark.python")
-      .orElse(sys.env.get("PYSPARK_PYTHON"))
-      .orElse(sys.props.get("pyspark.python")) // This java property is only used for internal UT.
-      .getOrElse("python")
+    val pythonExec = kind match {
+      case PySpark => sys.env.getOrElse("PYSPARK_PYTHON","python")
+      case PySpark3 => sys.env.getOrElse("PYSPARK3_PYTHON","python3")
+      case _ => conf.getOption("spark.pyspark.python")
+          .orElse(sys.env.get("PYSPARK_PYTHON"))
+          .orElse(sys.props.get("pyspark.python"))
+          .getOrElse("python")
+    }
 
     val gatewayServer = new GatewayServer(sparkEntries, 0)
     gatewayServer.start()
@@ -69,7 +73,7 @@ object PythonInterpreter extends Logging {
     env.put("LIVY_SPARK_MAJOR_VERSION", conf.get("spark.livy.spark_major_version", "1"))
     builder.redirectError(Redirect.PIPE)
     val process = builder.start()
-    new PythonInterpreter(process, gatewayServer)
+    new PythonInterpreter(process, gatewayServer, kind.toString)
   }
 
   private def findPySparkArchives(): Seq[String] = {
@@ -186,12 +190,13 @@ object PythonInterpreter extends Logging {
 
 private class PythonInterpreter(
     process: Process,
-    gatewayServer: GatewayServer)
+    gatewayServer: GatewayServer,
+    pyKind: String)
   extends ProcessInterpreter(process)
   with Logging {
   implicit val formats = DefaultFormats
 
-  override def kind: String = "pyspark"
+  override def kind: String = pyKind
 
   private[repl] lazy val pysparkJobProcessor =
     PythonInterpreter.initiatePy4jCallbackGateway(gatewayServer)

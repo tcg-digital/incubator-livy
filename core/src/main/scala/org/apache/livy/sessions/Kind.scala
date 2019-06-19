@@ -29,6 +29,8 @@ object Spark extends Kind("spark")
 
 object PySpark extends Kind("pyspark")
 
+object PySpark3 extends Kind("pyspark3")
+
 object SparkR extends Kind("sparkr")
 
 object Shared extends Kind("shared")
@@ -40,6 +42,7 @@ object Kind {
   def apply(kind: String): Kind = kind match {
     case "spark" | "scala" => Spark
     case "pyspark" | "python" => PySpark
+    case "pyspark3" | "python3" => PySpark3
     case "sparkr" | "r" => SparkR
     case "shared" => Shared
     case "sql" => SQL
